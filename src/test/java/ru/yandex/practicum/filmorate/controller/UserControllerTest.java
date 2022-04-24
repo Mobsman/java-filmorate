@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -81,13 +82,8 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void nameFailure () throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/users")
-                                .content("{\"id\":1,\"email\":\"test@mail.ru\",\"login\":\"login\",\"name\":\" \",\"birthday\":\"1988-07-13\"}")
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+    @AfterEach
+    void delete() {
+        userController.getAll().clear();
     }
-
 }
