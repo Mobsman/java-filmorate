@@ -80,4 +80,22 @@ public class UserControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void nameFailure () throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/users")
+                                .content("{\"id\":1,\"email\":\"test@mail.ru\",\"login\":\"login\",\"name\":\"na me\",\"birthday\":\"1994-07-13\"}")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void nameEmpty () throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/users")
+                                .content("{\"id\":1,\"email\":\"test@mail.ru\",\"login\":\"login\",\"name\":\"\",\"birthday\":\"1994-07-13\"}")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }

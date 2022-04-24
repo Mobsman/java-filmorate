@@ -5,6 +5,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.annotation.CheckName;
 import ru.yandex.practicum.filmorate.utils.annotation.DateOfBirth;
 import ru.yandex.practicum.filmorate.utils.annotation.Email;
+import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
+
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
@@ -50,9 +52,14 @@ public class ValidationUser {
                     throw new ValidationException("Неправильная почта");
                 }
             }
-
+            if (fields.isAnnotationPresent(NotEmpty.class)) {
+                if ((((((User) obj).getName()).isBlank())) || (((User) obj).getName().contains(" "))) {
+                    throw new ValidationException("отсутсвет имя или имя содержит пробел");
+                }
+            }
         }
         return true;
     }
 }
+
 
