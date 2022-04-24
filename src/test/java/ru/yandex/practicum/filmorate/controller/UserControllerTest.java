@@ -64,23 +64,7 @@ public class UserControllerTest {
                         .json("{\"id\":1,\"email\":\"test@mail.ru\",\"login\":\"login\",\"name\":\"name\",\"birthday\":\"1988-07-13\"}"));
     }
 
-    @Test
-    void mailFailure () throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/users")
-                                .content("{\"id\":-1,\"email\":\"test@mail\",\"login\":\"login\",\"name\":\"name\",\"birthday\":\"1988-07-13\"}")
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
 
-    @Test
-    void birthdayFailure () throws Exception {
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/users")
-                                .content("{\"id\":1,\"email\":\"test@mail\",\"login\":\"login\",\"name\":\"name\",\"birthday\":\"3000-07-13\"}")
-                                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
 
     @AfterEach
     void delete() {
