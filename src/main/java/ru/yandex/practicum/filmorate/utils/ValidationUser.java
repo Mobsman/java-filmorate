@@ -54,7 +54,7 @@ public class ValidationUser {
             }
             if (fields.isAnnotationPresent(NotEmpty.class)) {
                 if (((String) fields.get(obj)).isBlank()) {
-                    throw new ValidationException("Отсутствует название фильма");
+                    throw new ValidationException("логин пустой");
                 }
             }
         }
