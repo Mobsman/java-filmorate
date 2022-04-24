@@ -22,7 +22,7 @@ class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    public static Film film = new Film(1l, "test film", "test description", 100, LocalDate.of(1999, 7, 14));
+    public static Film film = new Film(1l, "test film", "test description", 100l, LocalDate.of(1999, 7, 14));
 
     @Test
     void getAllSuccess() throws Exception {
@@ -75,7 +75,7 @@ class FilmControllerTest {
     void releaseDurationFailure () throws Exception {
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/films")
-                                .content("{\"id\":1,\"name\":\"test film\",\"description\":\"test description\",\"duration\":0,\"releaseDate\":\"1700-07-14\"}")
+                                .content("{\"id\":-1,\"name\":\"test film\",\"description\":\"test description\",\"duration\":0,\"releaseDate\":\"1700-07-14\"}")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -84,7 +84,7 @@ class FilmControllerTest {
     void releaseDescriptionFailure () throws Exception {
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/films")
-                                .content("{\"id\":1,\"name\":\"test film\",\"description\":\"test zzzzzzzzzzzzzzzzzzzz" +
+                                .content("{\"id\":-1,\"name\":\"test film\",\"description\":\"test zzzzzzzzzzzzzzzzzzzz" +
                                         "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" +
                                         "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" +
                                         "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" +

@@ -50,7 +50,6 @@ public class ValidationUser {
                     throw new ValidationException("Неправильная почта");
                 }
             }
-
         }
         return true;
     }

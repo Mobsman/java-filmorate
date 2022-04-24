@@ -67,7 +67,7 @@ public class UserControllerTest {
     void mailFailure () throws Exception {
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/users")
-                                .content("{\"id\":1,\"email\":\"test@mail\",\"login\":\"login\",\"name\":\"name\",\"birthday\":\"1988-07-13\"}")
+                                .content("{\"id\":-1,\"email\":\"test@mail\",\"login\":\"login\",\"name\":\"name\",\"birthday\":\"1988-07-13\"}")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }

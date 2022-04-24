@@ -17,7 +17,7 @@ public class ValidationFilm {
     public static boolean validate(Object obj) throws IllegalAccessException {
 
         LocalDate d = LocalDate.of(1895, 12, 28);
-        Integer i = 0;
+        Long i = 0l;
 
         Class clacc = obj.getClass();
         Field[] field = clacc.getDeclaredFields();
@@ -36,7 +36,7 @@ public class ValidationFilm {
                 }
             }
             if (fields.isAnnotationPresent(Duration.class)) {
-                if (((Integer) fields.get(obj)).compareTo(i) == 0 || ((Integer) fields.get(obj)).compareTo(i) < 0) {
+                if (((Long) fields.get(obj)).compareTo(i) == 0l || ((Long) fields.get(obj)).compareTo(i) < 0) {
                     throw new ValidationException("Продолжительность меньше или равна нулю");
                 }
             }

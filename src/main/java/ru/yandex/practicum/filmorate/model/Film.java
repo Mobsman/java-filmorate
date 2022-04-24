@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Film {
 
+    @Duration
     private Long id;
 
     @NotEmpty
@@ -22,7 +23,7 @@ public class Film {
     @Length
     private String description;
     @Duration
-    private Integer duration;
+    private Long duration;
     @ReleaseDate
     private LocalDate releaseDate;
 
