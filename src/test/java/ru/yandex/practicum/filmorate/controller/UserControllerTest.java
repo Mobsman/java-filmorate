@@ -69,5 +69,6 @@ public class UserControllerTest {
     @AfterEach
     void delete() {
         userController.getAll().clear();
+
     }
 }
