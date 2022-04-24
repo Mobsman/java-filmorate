@@ -5,6 +5,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.annotation.CheckName;
 import ru.yandex.practicum.filmorate.utils.annotation.DateOfBirth;
 import ru.yandex.practicum.filmorate.utils.annotation.Email;
+import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
+
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
@@ -48,6 +50,11 @@ public class ValidationUser {
             if (fields.isAnnotationPresent(Email.class)) {
                 if (!(validateEmail(((User) obj).getEmail()))) {
                     throw new ValidationException("Неправильная почта");
+                }
+            }
+            if (fields.isAnnotationPresent(NotEmpty.class)) {
+                if (((String) fields.get(obj)).isBlank()) {
+                    throw new ValidationException("Отсутствует название фильма");
                 }
             }
         }

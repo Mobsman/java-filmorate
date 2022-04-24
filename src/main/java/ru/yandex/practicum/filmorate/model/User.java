@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.utils.annotation.*;
+import ru.yandex.practicum.filmorate.utils.annotation.CheckName;
+import ru.yandex.practicum.filmorate.utils.annotation.DateOfBirth;
+import ru.yandex.practicum.filmorate.utils.annotation.Email;
+import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
 
 import java.time.LocalDate;
 
@@ -11,7 +14,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User {
 
-    @Duration
     private Long id;
 
     @Email

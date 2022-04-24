@@ -22,7 +22,7 @@ class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    public static Film film = new Film(1l, "test film", "test description", 100l, LocalDate.of(1999, 7, 14));
+    public static Film film = new Film(1l, "test film", "test description", 100, LocalDate.of(1999, 7, 14));
 
     @Test
     void getAllSuccess() throws Exception {

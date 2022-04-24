@@ -81,4 +81,13 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void nameFailure () throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/users")
+                                .content("{\"id\":1,\"email\":\"test@mail.ru\",\"login\":\"login\",\"name\":\" \",\"birthday\":\"1988-07-13\"}")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful());
+    }
+
 }
