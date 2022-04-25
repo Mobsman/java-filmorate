@@ -27,34 +27,34 @@ public class ValidationUser {
     }
 
 
-    public static boolean validate(Object obj) throws IllegalAccessException {
+    public static boolean validate(User user) throws ValidationException {
 
         LocalDate d = LocalDate.now();
 
-        Class clacc = obj.getClass();
+        Class clacc = user.getClass();
         Field[] field = clacc.getDeclaredFields();
 
         for (Field fields : field) {
             fields.setAccessible(true);
 
             if (fields.isAnnotationPresent(DateOfBirth.class)) {
-                if (((LocalDate) fields.get(obj)).isAfter(d)) {
-                    throw new ValidationException("Неверная дата рождения");
+                if ((user.getBirthday().isAfter(d))) {
+                    throw new ValidationException(" возникла ошибка ");
                 }
             }
             if (fields.isAnnotationPresent(CheckName.class)) {
-                if (((String) fields.get(obj)).isBlank()) {
-                    ((User) obj).setName(((User) obj).getLogin());
+                if ((user.getName().isBlank())) {
+                    user.setName(user.getLogin());
                 }
             }
             if (fields.isAnnotationPresent(Email.class)) {
-                if (!(validateEmail(((User) obj).getEmail()))) {
-                    throw new ValidationException("Неправильная почта");
+                if (!(validateEmail(user.getEmail()))) {
+                    throw new ValidationException(" возникла ошибка ");
                 }
             }
             if (fields.isAnnotationPresent(NotEmpty.class)) {
-                if (((String) fields.get(obj)).isBlank()) {
-                    throw new ValidationException("логин пустой");
+                if ((user.getLogin().isBlank())) {
+                    throw new ValidationException(" возникла ошибка ");
                 }
             }
         }
