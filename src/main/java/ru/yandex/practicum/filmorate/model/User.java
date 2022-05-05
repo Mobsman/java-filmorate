@@ -9,13 +9,15 @@ import ru.yandex.practicum.filmorate.utils.annotation.Email;
 import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
     private Long id;
-
     @Email
     private String email;
     @NotEmpty
@@ -24,5 +26,7 @@ public class User {
     private String name;
     @DateOfBirth
     private LocalDate birthday;
+
+    private final Set<Long> friends = new HashSet<>(); ;
 
 }
