@@ -9,11 +9,13 @@ import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
 import ru.yandex.practicum.filmorate.utils.annotation.ReleaseDate;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Film {
+public class Film implements Comparable<Film> {
 
     private Long id;
 
@@ -26,5 +28,13 @@ public class Film {
     @ReleaseDate
     private LocalDate releaseDate;
 
+    private final Set<Long> likes = new HashSet<>();
 
+
+    @Override
+    public int compareTo(Film o) {
+        int a = this.getLikes().size();
+        int b = o.getLikes().size();
+        return b - a ;
+    }
 }

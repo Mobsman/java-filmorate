@@ -1,19 +1,18 @@
 package ru.yandex.practicum.filmorate.inMemoryStorage;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.ValidationUser;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@AllArgsConstructor
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
@@ -40,10 +39,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void remove(Long id)  {
-        for(Iterator<Map.Entry<Long, User>> it = users.entrySet().iterator(); it.hasNext(); ) {
+    public void remove(Long id) {
+        for (Iterator<Map.Entry<Long, User>> it = users.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Long, User> entry = it.next();
-            if(entry.getKey().equals(id)) {
+            if (entry.getKey().equals(id)) {
                 it.remove();
             }
             log.info("Не найден user: {}", id);
@@ -54,13 +53,18 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User getById(Long id) {
         User user = new User();
-        for(Iterator<Map.Entry<Long, User>> it = users.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<Long, User>> it = users.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Long, User> entry = it.next();
-            if(entry.getKey().equals(id)) {
+            if (entry.getKey().equals(id)) {
                 user = entry.getValue();
-            } else user=null;
-            log.info("Не найден user: {}", id);
+            }
+
         }
+        if (user==null){
+            log.info("Не найден user: {}", id);
+            return null;
+        }
+
         log.info("Получен user: {}", id);
         return user;
     }

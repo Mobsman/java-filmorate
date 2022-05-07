@@ -40,10 +40,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void remove(Long id)  {
-        for(Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
+    public void remove(Long id) {
+        for (Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Long, Film> entry = it.next();
-            if(entry.getKey().equals(id)) {
+            if (entry.getKey().equals(id)) {
                 it.remove();
             }
             log.info("Не найден film: {}", id);
@@ -54,13 +54,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getById(Long id) {
         Film film = new Film();
-        for(Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Long, Film> entry = it.next();
-            if(entry.getKey().equals(id)) {
+            if (entry.getKey().equals(id)) {
                 film = entry.getValue();
-            } else film=null;
-            log.info("Не найден film: {}", id);
+            }
         }
+
+        if (film == null) {
+            log.info("Не найден film: {}", id);
+            return null;
+        }
+
         log.info("Получен film: {}", id);
         return film;
     }

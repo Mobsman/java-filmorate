@@ -18,6 +18,7 @@ import java.util.Set;
 public class User {
 
     private Long id;
+
     @Email
     private String email;
     @NotEmpty
