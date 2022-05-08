@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -10,13 +11,10 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
-    FilmService filmService;
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
+   private final FilmService filmService;
 
     @GetMapping()
     public Collection<Film> getAll() {
@@ -26,6 +24,7 @@ public class FilmController {
     @PostMapping()
     public Film post(@RequestBody Film film) throws ValidationException {
         return filmService.getFilmStorage().create(film);
+        // Я здесь вроде вызываю метод getFilmStorage() из сервиса , не понимаю как еще можно обратится к FilmStorage
     }
 
     @PutMapping()

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.utils.ValidationUser;
+import ru.yandex.practicum.filmorate.utils.UserValidator;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,7 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User create(User user) throws ValidationException {
-        if (ValidationUser.validate(user)) {
+        if (UserValidator.validate(user)) {
             users.put(user.getId(), user);
             log.info("Добавлен user: {}", user);
             return user;
@@ -30,7 +30,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) throws ValidationException {
-        if (ValidationUser.validate(user)) {
+        if (UserValidator.validate(user)) {
             users.put(user.getId(), user);
             log.info("Добавлен film: {}", user);
             return user;

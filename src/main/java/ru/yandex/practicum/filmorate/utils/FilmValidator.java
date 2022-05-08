@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.utils.annotation.ReleaseDate;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 
-public class ValidationFilm {
+public class FilmValidator {
 
 
 

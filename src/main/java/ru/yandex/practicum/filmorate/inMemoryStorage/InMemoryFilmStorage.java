@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.ValidationFilm;
+import ru.yandex.practicum.filmorate.utils.FilmValidator;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) throws ValidationException {
-        if (ValidationFilm.validate(film)) {
+        if (FilmValidator.validate(film)) {
             films.put(film.getId(), film);
             log.info("Добавлен film: {}", film);
             return film;
@@ -31,7 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) throws ValidationException {
-        if (ValidationFilm.validate(film)) {
+        if (FilmValidator.validate(film)) {
             films.put(film.getId(), film);
             log.info("Добавлен film: {}", film);
             return film;
