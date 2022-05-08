@@ -18,28 +18,28 @@ public class FilmController {
 
     @GetMapping()
     public Collection<Film> getAll() {
-        return filmService.getFilmStorage().getAll();
+        return filmService.getAll();
     }
 
     @PostMapping()
     public Film post(@RequestBody Film film) throws ValidationException {
-        return filmService.getFilmStorage().create(film);
-        // Я здесь вроде вызываю метод getFilmStorage() из сервиса , не понимаю как еще можно обратится к FilmStorage
+        return filmService.create(film);
+
     }
 
     @PutMapping()
     public Film put(@RequestBody Film film) throws ValidationException {
-        return filmService.getFilmStorage().update(film);
+        return filmService.update(film);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id)  {
-        filmService.getFilmStorage().remove(id);
+        filmService.remove(id);
     }
 
     @GetMapping("/{id}")
     public Film getById(@PathVariable Long id) {
-        return filmService.getFilmStorage().getById(id);
+        return filmService.getById(id);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

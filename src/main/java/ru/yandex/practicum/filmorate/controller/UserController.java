@@ -20,27 +20,27 @@ public class UserController {
 
     @GetMapping()
     public Collection<User> getAll() {
-        return userService.getUserStorage().getAll();
+        return userService.getAll();
     }
 
     @PostMapping()
     public User post(@RequestBody User user) throws ValidationException {
-        return userService.getUserStorage().create(user);
+        return userService.create(user);
     }
 
     @PutMapping()
     public User put(@RequestBody User user) throws ValidationException {
-        return userService.getUserStorage().update(user);
+        return userService.update(user);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        userService.getUserStorage().remove(id);
+        userService.remove(id);
     }
 
     @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
-        return userService.getUserStorage().getById(id);
+        return userService.getById(id);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
