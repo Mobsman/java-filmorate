@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -11,65 +12,31 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
-public class FilmService implements FilmStorage{
+@RequiredArgsConstructor
+public class FilmService {
 
-    private final Map<Long, Film> films = new ConcurrentHashMap<>();
+   private final FilmStorage filmStorage;
 
-    @Override
     public Film create(Film film) throws ValidationException {
-        if (FilmValidator.validate(film)) {
-            films.put(film.getId(), film);
-            log.info("Добавлен film: {}", film);
-            return film;
-        }
-        return null;
+            return filmStorage.create(film);
     }
 
-    @Override
     public Film update(Film film) throws ValidationException {
-        if (FilmValidator.validate(film)) {
-            films.put(film.getId(), film);
-            log.info("Добавлен film: {}", film);
-            return film;
-        }
-        return null;
+            return filmStorage.update(film);
     }
 
-    @Override
     public void remove(Long id) {
-        for (Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<Long, Film> entry = it.next();
-            if (entry.getKey().equals(id)) {
-                it.remove();
-            }
-            log.info("Не найден film: {}", id);
-        }
-        log.info("Удален film: {}", id);
+      filmStorage.remove(id);
     }
 
-    @Override
+
     public Film getById(Long id) {
-        Film film = new Film();
-        for (Iterator<Map.Entry<Long, Film>> it = films.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<Long, Film> entry = it.next();
-            if (entry.getKey().equals(id)) {
-                film = entry.getValue();
-            }
-        }
-
-        if (film == null) {
-            log.info("Не найден film: {}", id);
-            return null;
-        }
-
-        log.info("Получен film: {}", id);
-        return film;
+      return filmStorage.getById(id);
     }
 
-    @Override
+
     public Collection<Film> getAll() {
-        log.info("Получен список фильмов");
-        return films.values();
+      return filmStorage.getAll();
     }
 
     public void addLike(Long filmId, Long userId) {
