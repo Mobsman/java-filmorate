@@ -28,7 +28,6 @@ public class Film implements Comparable<Film> {
     @ReleaseDate
     private LocalDate releaseDate;
 
-
     private final Set<Long> likes = new HashSet<>();
 
 
