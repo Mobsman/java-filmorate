@@ -27,8 +27,7 @@ public class Film implements Comparable<Film> {
     private Integer duration;
     @ReleaseDate
     private LocalDate releaseDate;
-    private Genre genre;
-    private Rating rating;
+
 
     private final Set<Long> likes = new HashSet<>();
 
