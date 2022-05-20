@@ -22,7 +22,6 @@ public class Film implements Comparable<Film> {
     private List<String> genres;
 
     private Long id;
-
     @NotEmpty
     private String name;
     @Length
