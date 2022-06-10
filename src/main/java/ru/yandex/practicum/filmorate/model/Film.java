@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.utils.annotation.NotEmpty;
 import ru.yandex.practicum.filmorate.utils.annotation.ReleaseDate;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,8 +19,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class Film implements Comparable<Film> {
 
-    private Long id;
+    private List<String> genres;
 
+    private Long id;
     @NotEmpty
     private String name;
     @Length
@@ -27,7 +30,7 @@ public class Film implements Comparable<Film> {
     private Integer duration;
     @ReleaseDate
     private LocalDate releaseDate;
-
+    private Rating rating;
     private final Set<Long> likes = new HashSet<>();
 
 

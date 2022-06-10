@@ -28,6 +28,9 @@ public class User {
     @DateOfBirth
     private LocalDate birthday;
 
+    private User toRequestId;
+
+
     private final Set<Long> friends = new HashSet<>(); ;
 
 }
