@@ -30,7 +30,6 @@ public class User {
 
     private User toRequestId;
 
-
     private final Set<Long> friends = new HashSet<>(); ;
 
 }
