@@ -29,7 +29,6 @@ import java.util.*;
 @Primary
 public class FilmDbStorage implements FilmStorage {
 
-
     private final JdbcTemplate jdbcTemplate;
 
     private final String getFilm = "SELECT f.id,f.name,f.description,f.duration,f.release_date,f.rating_id, " +
