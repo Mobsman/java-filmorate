@@ -222,15 +222,10 @@ public class FilmDbStorage implements FilmStorage {
     public List<Rating> getAllRatings() {
 
         String sql = "SELECT * FROM RATING";
-        return jdbcTemplate.query(sql, new RowMapper<Rating>() {
-            @Override
-            public Rating mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return Rating.builder()
-                        .id(rs.getInt("id"))
-                        .name(rs.getString("name"))
-                        .build();
-            }
-        });
+        return jdbcTemplate.query(sql, (rs, rowNum) -> Rating.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .build());
     }
 
     @Override
