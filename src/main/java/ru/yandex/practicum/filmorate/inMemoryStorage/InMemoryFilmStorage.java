@@ -3,12 +3,15 @@ package ru.yandex.practicum.filmorate.inMemoryStorage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.utils.FilmValidator;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -74,5 +77,40 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Collection<Film> getAll() {
         log.info("Получен список фильмов");
         return films.values();
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+
+    }
+
+    @Override
+    public void deleteLike(Long filmId, Long userId) {
+
+    }
+
+    @Override
+    public List<Film> getPopularFilm(int countFilm) {
+        return null;
+    }
+
+    @Override
+    public List<Rating> getAllRatings() {
+        return null;
+    }
+
+    @Override
+    public Rating getRatingById(int ratingId) {
+        return null;
+    }
+
+    @Override
+    public List<Genre> getAllGenres() {
+        return null;
+    }
+
+    @Override
+    public Genre getGenreById(Integer genreId) {
+        return null;
     }
 }

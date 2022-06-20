@@ -4,9 +4,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import java.util.Collection;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
-@Primary
+import java.util.Collection;
+import java.util.List;
+
+
 public interface FilmStorage {
 
     Film create(Film film) throws ValidationException;
@@ -19,4 +23,17 @@ public interface FilmStorage {
 
     Collection<Film> getAll();
 
+    void addLike(Long filmId, Long userId);
+
+    void deleteLike(Long filmId, Long userId);
+
+    List<Film> getPopularFilm(int countFilm);
+
+    List<Rating> getAllRatings();
+
+    Rating getRatingById(int ratingId);
+
+    List<Genre> getAllGenres();
+
+    Genre getGenreById(Integer genreId);
 }

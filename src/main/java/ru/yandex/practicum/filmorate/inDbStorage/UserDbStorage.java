@@ -1,17 +1,19 @@
 package ru.yandex.practicum.filmorate.inDbStorage;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.utils.UserValidator;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,12 +21,17 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@AllArgsConstructor
-@Component("userDbStorage")
+@Component("UserDbStorage")
 @Primary
 public class UserDbStorage implements UserStorage {
 
+
     private final JdbcTemplate jdbcTemplate;
+
+
+    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public User create(User user) throws ValidationException {
@@ -32,32 +39,19 @@ public class UserDbStorage implements UserStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Timestamp timestamp = Timestamp.valueOf(user.getBirthday().atStartOfDay());
 
-            jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+        if (UserValidator.validate(user)) {
+            jdbcTemplate.update(con -> {
                 PreparedStatement userStatement = con.prepareStatement(
-                        "INSERT INTO USERS " + "(EMAIL,LOGIN,NAME,BIRTHDAY) VALUES (?,?,?,?)", 1);
+                        "INSERT INTO USERS " + "(EMAIL,LOGIN,NAME,BIRTHDAY) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 userStatement.setString(1, user.getEmail());
                 userStatement.setString(2, user.getLogin());
                 userStatement.setString(3, user.getName());
                 userStatement.setTimestamp(4, timestamp);
-                ResultSet rs = userStatement.getGeneratedKeys();
                 return userStatement;
-            }
-        }, keyHolder);
+            }, keyHolder);
+        }
 
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User userdb = new User();
-                userdb.setId((long) rs.getInt(1));
-                userdb.setEmail(rs.getString(2));
-                userdb.setLogin(rs.getString(3));
-                userdb.setName(rs.getString(4));
-                userdb.setBirthday(rs.getTimestamp(5).toLocalDateTime().toLocalDate());
-                return userdb;
-            }
-        }, keyHolder.getKey());
+        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, keyHolder.getKey());
     }
 
     @Override
@@ -65,24 +59,15 @@ public class UserDbStorage implements UserStorage {
 
         Timestamp timestamp = Timestamp.valueOf(user.getBirthday().atStartOfDay());
 
-        String sql = "UPDATE users SET email = ?, login = ?,name = ?,birthday = ? WHERE id = ? ";
-        int rowNum = jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), timestamp, user.getId());
+        if (UserValidator.validate(user)) {
+            String sql = "UPDATE users SET email = ?, login = ?,name = ?,birthday = ? WHERE id = ? ";
+            int rowNum = jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), timestamp, user.getId());
 
-        if (rowNum == 1) {
-            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", new RowMapper<User>() {
-                @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    User userdb = new User();
-                    userdb.setId((long) rs.getInt(1));
-                    userdb.setEmail(rs.getString(2));
-                    userdb.setLogin(rs.getString(3));
-                    userdb.setName(rs.getString(4));
-                    userdb.setBirthday(rs.getTimestamp(5).toLocalDateTime().toLocalDate());
-                    return userdb;
-                }
-            }, user.getId());
+            if (rowNum == 1) {
+                return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, user.getId());
+            }
         }
-        return null;
+        throw new UserNotFoundException("Пользователь не найден.");
     }
 
     @Override
@@ -90,24 +75,17 @@ public class UserDbStorage implements UserStorage {
 
         String sql = "DELETE FROM users WHERE id = ? ";
         jdbcTemplate.update(sql, id);
-
     }
 
     @Override
     public User getById(Long id) {
 
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User userdb = new User();
-                userdb.setId((long) rs.getInt(1));
-                userdb.setEmail(rs.getString(2));
-                userdb.setLogin(rs.getString(3));
-                userdb.setName(rs.getString(4));
-                userdb.setBirthday(rs.getTimestamp(5).toLocalDateTime().toLocalDate());
-                return userdb;
-            }
-        }, id);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, id);
+        } catch (DataAccessException e) {
+            throw new UserNotFoundException("Пользователь не найден.");
+        }
+
     }
 
     @Override
@@ -130,13 +108,51 @@ public class UserDbStorage implements UserStorage {
         return users;
     }
 
-
     public void addFriend(Long userId, Long friendId) {
 
         User user = getById(userId);
         User friend = getById(friendId);
 
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        String sql = "INSERT INTO friend (user_id,friend_id) VALUES (?,?)";
+
+        if (user != null && friend != null) {
+            if (chekDuplicateFriend(userId, friendId).size() <= 0) {
+                jdbcTemplate.update(sql, userId, friendId);
+            }
+        }
     }
+
+    private List<Map<String, Object>> chekDuplicateFriend(Long userId, Long friendId) {
+        String sql = "SELECT user_id,friend_id FROM Friend" +
+                " WHERE (user_id=? AND friend_id=? )";
+        return jdbcTemplate.queryForList(sql, userId, friendId);
+    }
+
+    @Override
+    public void removeFriend(Long userId, Long friendId) {
+        String sql = "DELETE FROM friend WHERE user_id = ? AND friend_id = ?";
+        jdbcTemplate.update(sql, userId, friendId);
+    }
+
+    @Override
+    public Collection<User> getAllFriends(Long userId) {
+
+        String sql = "SELECT * FROM users WHERE id IN (SELECT friend_id FROM friend WHERE user_id = ?)";
+
+        return jdbcTemplate.query(sql, this::userRows, userId);
+    }
+
+
+    private User userRows(ResultSet rowSet, int rowNum) throws SQLException {
+        return User.builder()
+                .id((long) rowSet.getInt("id"))
+                .login(rowSet.getString("login"))
+                .name(rowSet.getString("name"))
+                .email(rowSet.getString("email"))
+                .birthday(rowSet.getDate("birthday").toLocalDate())
+                .build();
+    }
+
+
 }
+

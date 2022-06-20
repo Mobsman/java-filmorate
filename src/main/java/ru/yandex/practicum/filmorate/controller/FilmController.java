@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import java.util.*;
@@ -17,18 +18,18 @@ public class FilmController {
    private final FilmService filmService;
 
     @GetMapping()
-    public Collection<Film> getAll() {
+    public Collection<FilmDto> getAll() {
         return filmService.getAll();
     }
 
     @PostMapping()
-    public Film post(@RequestBody Film film) throws ValidationException {
+    public FilmDto post(@RequestBody Film film) throws ValidationException {
         return filmService.create(film);
 
     }
 
     @PutMapping()
-    public Film put(@RequestBody Film film) throws ValidationException {
+    public FilmDto put(@RequestBody Film film) throws ValidationException {
         return filmService.update(film);
     }
 
