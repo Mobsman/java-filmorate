@@ -30,7 +30,14 @@ public class FilmService {
 
     public FilmDto update(Film film) throws ValidationException {
 
-        return converter.convert(filmStorage.update(film));
+  Film film1 = null;
+  film1= filmStorage.update(film);
+
+
+        FilmDto film2 = converter.
+                convert(film1);
+
+        return  film2;
     }
 
     public void remove(Long id) {
@@ -38,8 +45,8 @@ public class FilmService {
     }
 
 
-    public Film getById(Long id) {
-        return filmStorage.getById(id);
+    public FilmDto getById(Long id) {
+        return converter.convert(filmStorage.getById(id));
     }
 
 
@@ -49,14 +56,14 @@ public class FilmService {
 
     public void addLike(Long filmId, Long userId) {
 
-        filmStorage.addLike(filmId,userId);
+        filmStorage.addLike(filmId, userId);
 
     }
 
     public void deleteLike(Long filmId, Long userId) {
 
-        Film film = getById(filmId);
-        film.getLikes().remove(userId);
+        //  Film film = getById(filmId);
+        //  film.getLikes().remove(userId);
 
     }
 

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -54,9 +53,9 @@ public class FilmDbStorage implements FilmStorage {
             return filmStatement;
         }, keyHolder);
 
-        addGenre(film);
+        Film filmGenres = jdbcTemplate.queryForObject(getFilm, this::filmRows, keyHolder.getKey());
 
-        return jdbcTemplate.queryForObject(getFilm, this::filmRows, keyHolder.getKey());
+        return addGenre(filmGenres);
 
     }
 
@@ -72,32 +71,35 @@ public class FilmDbStorage implements FilmStorage {
 
 
         if (rowNum == 1) {
-            addGenre(film);
-            return jdbcTemplate.queryForObject(getFilm, this::filmRows, film.getId());
+            return addGenre(film);
         }
 
         throw new FilmNotFoundException("фильм ненайден");
     }
 
-    public void addGenre(Film film) {
+    public Film addGenre(Film film) {
 
         String sqlDelete = "DELETE FROM GENRE_FILM WHERE FILM_ID = ?";
 
-            jdbcTemplate.update(sqlDelete, film.getId());
-            if (film.getGenres() == null || film.getGenres().isEmpty()) {
-                return;
-            }
-            Set<Genre> filmGenre = film.getGenres();
-            for (Genre genre : filmGenre) {
-                jdbcTemplate.update(con -> {
-                    PreparedStatement genreStatement = con.prepareStatement(
-                            "INSERT INTO GENRE_FILM " + "(FILM_ID, GENRE_ID) VALUES (?,?)");
-                    genreStatement.setInt(1, Math.toIntExact(film.getId()));
-                    genreStatement.setInt(2, genre.getId());
-                    return genreStatement;
-                });
-            }
-}
+        int check = jdbcTemplate.update(sqlDelete, film.getId());
+
+        if (film.getGenres() == null || film.getGenres().isEmpty() && check != 0) {
+            return film;
+        }
+
+        for (Genre genre : film.getGenres()) {
+            jdbcTemplate.update(con -> {
+                PreparedStatement genreStatement = con.prepareStatement(
+                        "INSERT INTO GENRE_FILM " + "(FILM_ID, GENRE_ID) VALUES (?,?)");
+                genreStatement.setInt(1, Math.toIntExact(film.getId()));
+                genreStatement.setInt(2, genre.getId());
+                return genreStatement;
+            });
+        }
+
+        film.setGenres(getGenreFilm(film.getId()));
+        return  film;
+    }
 
     @Override
     public void remove(Long id) {
@@ -113,7 +115,6 @@ public class FilmDbStorage implements FilmStorage {
         } catch (DataAccessException e) {
             throw new FilmNotFoundException("фильм ненайден");
         }
-
     }
 
     @Override
@@ -166,8 +167,8 @@ public class FilmDbStorage implements FilmStorage {
 
     private Set<Genre> getGenreFilm(Long filmId) {
 
-        String sql = "select g.id,g.name from film f inner join genre_film gf " +
-                "on f.id = ? inner join genre g on g.id = gf.GENRE_ID";
+        String sql = "select g.id,g.name from Film f inner join genre_film gf on gf.film_id = f.id  " +
+                "inner join genre g on g.id = gf.GENRE_ID  where film_id =?";
 
         List<Map<String, Object>> mapList = jdbcTemplate.queryForList(sql, filmId);
 
@@ -209,11 +210,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int countFilm) {
+    public List<Film> getPopularFilm(Integer count) {
 
         List<Film> film = (List<Film>) getAll();
+        if(count>film.size()){
+            count=film.size();
+        }
+
         Collections.sort(film);
-        return film.subList(0, countFilm);
+        return film.subList(0,count );
 
     }
 

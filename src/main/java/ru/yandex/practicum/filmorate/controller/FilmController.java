@@ -39,7 +39,7 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable Long id) {
+    public FilmDto getById(@PathVariable Long id) {
         return filmService.getById(id);
     }
 
@@ -54,7 +54,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilm(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> getPopularFilm(@RequestParam(defaultValue = "2") int count) {
         return filmService.getPopularFilm(count);
     }
 
