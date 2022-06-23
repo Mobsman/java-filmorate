@@ -1,18 +1,17 @@
 package ru.yandex.practicum.filmorate.inMemoryStorage;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.UserValidator;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
+@AllArgsConstructor
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
@@ -74,4 +73,44 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Получен список пользователей");
         return users.values();
     }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+        User user = getById(userId);
+        User friend = getById(friendId);
+
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
+    }
+
+    @Override
+    public void removeFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public Collection<User> getAllFriends(Long userId) {
+        return null;
+    }
+
+    public Collection<Long> getAllCommonFriends(Long userId, Long friendId) {
+        List<Long> commonFriends = new ArrayList<>();
+
+        User user = getById(userId);
+        User friend = getById(friendId);
+
+        Set<Long> userFriends = user.getFriends();
+        Set <Long> friends = friend.getFriends();
+
+        for (Long u : userFriends) {
+            for (Long f : friends) {
+                if(u.equals(f)){
+                    commonFriends.add(f);
+                }
+            }
+        }
+        return commonFriends;
+    }
+
+
 }

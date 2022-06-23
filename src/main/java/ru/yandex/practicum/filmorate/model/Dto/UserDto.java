@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.annotation.CheckName;
 import ru.yandex.practicum.filmorate.utils.annotation.DateOfBirth;
 import ru.yandex.practicum.filmorate.utils.annotation.Email;
@@ -17,21 +18,16 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class UserDto  {
 
     private Long id;
-
-    @Email
-    private String email;
     @NotEmpty
     private String login;
     @CheckName
     private String name;
+    @Email
+    private String email;
     @DateOfBirth
     private LocalDate birthday;
-
-    private User toRequestId;
-
     private Set<Long> friends = new HashSet<>();
-
 }
