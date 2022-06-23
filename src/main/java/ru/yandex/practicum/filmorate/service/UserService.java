@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
@@ -20,11 +21,11 @@ public class UserService {
     private final UserStorage userStorage;
     private final ConverterUserToUserDto converter;
 
-    public UserDto create(User user) throws ValidationException {
+    public UserDto create(User user) throws ValidationException, UserNotFoundException {
         return converter.convert(userStorage.create(user));
     }
 
-    public UserDto update(User user) throws ValidationException {
+    public UserDto update(User user) throws ValidationException, UserNotFoundException {
 
         return converter.convert(userStorage.update(user));
     }
@@ -34,7 +35,7 @@ public class UserService {
     }
 
 
-    public UserDto getById(Long id) {
+    public UserDto getById(Long id) throws UserNotFoundException {
         return converter.convert(userStorage.getById(id));
     }
 
@@ -43,7 +44,7 @@ public class UserService {
         return userStorage.getAll().stream().map(converter::convert).collect(Collectors.toList());
     }
 
-    public void addFriend(Long userId, Long friendId) {
+    public void addFriend(Long userId, Long friendId) throws UserNotFoundException {
 
         userStorage.addFriend(userId, friendId);
     }

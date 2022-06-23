@@ -3,10 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
 import java.util.*;
 
 @Slf4j
@@ -15,7 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmController {
 
-   private final FilmService filmService;
+    private final FilmService filmService;
 
     @GetMapping()
     public Collection<FilmDto> getAll() {
@@ -23,23 +25,23 @@ public class FilmController {
     }
 
     @PostMapping()
-    public FilmDto post(@RequestBody Film film) throws ValidationException {
+    public FilmDto post(@RequestBody Film film) {
         return filmService.create(film);
 
     }
 
     @PutMapping()
-    public FilmDto put(@RequestBody Film film) throws ValidationException {
+    public FilmDto put(@RequestBody Film film) throws ValidationException, FilmNotFoundException {
         return filmService.update(film);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id)  {
+    public void delete(@PathVariable Long id) {
         filmService.remove(id);
     }
 
     @GetMapping("/{id}")
-    public FilmDto getById(@PathVariable Long id) {
+    public FilmDto getById(@PathVariable Long id) throws FilmNotFoundException {
         return filmService.getById(id);
     }
 
@@ -49,7 +51,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
-    public void deleteLike(@PathVariable Long filmId, @PathVariable Long userId) {
+    public void deleteLike(@PathVariable Long filmId, @PathVariable Long userId) throws FilmNotFoundException {
         filmService.deleteLike(filmId, userId);
     }
 
@@ -57,7 +59,6 @@ public class FilmController {
     public List<Film> getPopularFilm(@RequestParam(defaultValue = "2") int count) {
         return filmService.getPopularFilm(count);
     }
-
 
 
 }

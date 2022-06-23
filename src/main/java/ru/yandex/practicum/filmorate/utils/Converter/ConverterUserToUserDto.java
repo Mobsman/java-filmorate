@@ -10,12 +10,13 @@ public class ConverterUserToUserDto implements Converter<User, UserDto> {
 
     @Override
     public UserDto convert(User user) {
-       return UserDto.builder()
+        return UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .login(user.getLogin())
                 .birthday(user.getBirthday())
+                .friends(user.getFriends())
                 .build();
     }
 

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("UserDbStorage")
@@ -34,7 +35,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User create(User user) throws ValidationException {
+    public User create(User user) throws ValidationException, UserNotFoundException {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         Timestamp timestamp = Timestamp.valueOf(user.getBirthday().atStartOfDay());
@@ -51,11 +52,16 @@ public class UserDbStorage implements UserStorage {
             }, keyHolder);
         }
 
-        return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, keyHolder.getKey());
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, keyHolder.getKey());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        throw new UserNotFoundException("пользователь ненайден");
     }
 
     @Override
-    public User update(User user) throws ValidationException {
+    public User update(User user) throws ValidationException, UserNotFoundException {
 
         Timestamp timestamp = Timestamp.valueOf(user.getBirthday().atStartOfDay());
 
@@ -63,12 +69,16 @@ public class UserDbStorage implements UserStorage {
             String sql = "UPDATE users SET email = ?, login = ?,name = ?,birthday = ? WHERE id = ? ";
             int rowNum = jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(), timestamp, user.getId());
 
-            if (rowNum == 1) {
+
+            try {
                 return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, user.getId());
+            } catch (DataAccessException e) {
+                e.printStackTrace();
             }
         }
-        throw new UserNotFoundException("Пользователь не найден.");
+        throw new UserNotFoundException("пользователь ненайден");
     }
+
 
     @Override
     public void remove(Long id) {
@@ -78,14 +88,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getById(Long id) {
+    public User getById(Long id) throws UserNotFoundException {
 
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM USERS WHERE id = ?", this::userRows, id);
         } catch (DataAccessException e) {
-            throw new UserNotFoundException("Пользователь не найден.");
+            e.printStackTrace();
         }
 
+        throw new UserNotFoundException("Пользователь не найден");
     }
 
     @Override
@@ -108,7 +119,7 @@ public class UserDbStorage implements UserStorage {
         return users;
     }
 
-    public void addFriend(Long userId, Long friendId) {
+    public void addFriend(Long userId, Long friendId) throws UserNotFoundException {
 
         User user = getById(userId);
         User friend = getById(friendId);
@@ -150,6 +161,7 @@ public class UserDbStorage implements UserStorage {
                 .name(rowSet.getString("name"))
                 .email(rowSet.getString("email"))
                 .birthday(rowSet.getDate("birthday").toLocalDate())
+                .friends(getAllFriends((long) rowSet.getInt("id")).stream().map(User::getId).collect(Collectors.toSet()))
                 .build();
     }
 

@@ -32,15 +32,15 @@ public class Film implements Comparable<Film> {
 
     private Rating mpa;
 
-    Set<Genre> genres = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();
 
-    private Set<Long> likes ;
+    private Set<Long> likes;
 
 
     @Override
     public int compareTo(Film o) {
         int a = this.getLikes().size();
         int b = o.getLikes().size();
-        return b - a ;
+        return b - a;
     }
 }

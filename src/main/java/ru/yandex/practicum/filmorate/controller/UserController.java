@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
@@ -26,12 +28,12 @@ public class UserController {
     }
 
     @PostMapping()
-    public UserDto post(@RequestBody User user) throws ValidationException {
+    public UserDto post(@RequestBody User user) throws ValidationException, UserNotFoundException {
         return userService.create(user);
     }
 
     @PutMapping()
-    public UserDto put(@RequestBody User user) throws ValidationException {
+    public UserDto put(@RequestBody User user) throws ValidationException, UserNotFoundException {
         return userService.update(user);
     }
 
@@ -40,13 +42,14 @@ public class UserController {
         userService.remove(id);
     }
 
+
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable Long id) {
+    public UserDto getById(@PathVariable Long id) throws UserNotFoundException {
         return userService.getById(id);
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
-    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) throws UserNotFoundException {
         userService.addFriend(userId, friendId);
     }
 

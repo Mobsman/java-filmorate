@@ -3,6 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -28,16 +31,16 @@ public class FilmService {
         return converter.convert(filmStorage.create(film));
     }
 
-    public FilmDto update(Film film) throws ValidationException {
+    public FilmDto update(Film film) throws ValidationException, FilmNotFoundException {
 
-  Film film1 = null;
-  film1= filmStorage.update(film);
+        Film film1 = null;
+        film1 = filmStorage.update(film);
 
 
         FilmDto film2 = converter.
                 convert(film1);
 
-        return  film2;
+        return film2;
     }
 
     public void remove(Long id) {
@@ -45,7 +48,7 @@ public class FilmService {
     }
 
 
-    public FilmDto getById(Long id) {
+    public FilmDto getById(Long id) throws FilmNotFoundException {
         return converter.convert(filmStorage.getById(id));
     }
 
@@ -60,10 +63,10 @@ public class FilmService {
 
     }
 
-    public void deleteLike(Long filmId, Long userId) {
+    public void deleteLike(Long filmId, Long userId) throws FilmNotFoundException {
 
-        //  Film film = getById(filmId);
-        //  film.getLikes().remove(userId);
+        Film film = filmStorage.getById(filmId);
+        film.getLikes().remove(userId);
 
     }
 
@@ -76,7 +79,7 @@ public class FilmService {
         return filmStorage.getAllRatings();
     }
 
-    public Rating getRatingById(int ratingId) {
+    public Rating getRatingById(int ratingId) throws RatingNotFoundException, GenreNotFoundException {
         return filmStorage.getRatingById(ratingId);
     }
 
@@ -84,8 +87,9 @@ public class FilmService {
         return filmStorage.getAllGenres();
     }
 
-    public Genre getGenreById(int ratingId) {
-        return filmStorage.getGenreById(ratingId);
-    }
+    public Genre getGenreById(int ratingId) throws GenreNotFoundException {
 
+        return filmStorage.getGenreById(ratingId);
+
+    }
 }

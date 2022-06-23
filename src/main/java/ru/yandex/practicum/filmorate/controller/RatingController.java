@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -31,7 +33,7 @@ public class RatingController {
     }
 
     @GetMapping("/{ratingId}")
-    public Rating getRatingById(@PathVariable Integer ratingId) {
+    public Rating getRatingById(@PathVariable Integer ratingId) throws RatingNotFoundException, GenreNotFoundException {
         log.info("запрашиваемы рейтинг : " + ratingId);
         return filmService.getRatingById(ratingId);
     }

@@ -1,10 +1,10 @@
-CREATE TABLE Rating
+CREATE TABLE IF NOT EXISTS Rating
 (
     id   serial PRIMARY KEY,
     name VARCHAR(6) NOT NULL
 );
 
-CREATE TABLE Film
+CREATE TABLE IF NOT EXISTS Film
 (
     id           serial PRIMARY KEY,
     name         VARCHAR(45)  NOT NULL,
@@ -14,20 +14,20 @@ CREATE TABLE Film
     rating_id    INT REFERENCES Rating (id)
 );
 
-CREATE TABLE Genre
+CREATE TABLE IF NOT EXISTS Genre
 (
     id   serial PRIMARY KEY,
     name VARCHAR(15) NOT NULL
 );
 
-CREATE TABLE Genre_film
+CREATE TABLE IF NOT EXISTS Genre_film
 (
     film_id  INT REFERENCES Film (id) ,
     genre_id INT REFERENCES Genre (id)
 );
 
 
-CREATE TABLE Users
+CREATE TABLE IF NOT EXISTS Users
 (
     id       serial PRIMARY KEY,
     email    VARCHAR(45) NOT NULL,
@@ -36,14 +36,14 @@ CREATE TABLE Users
     birthday TIMESTAMP   NOT NULL
 );
 
-CREATE TABLE Likes
+CREATE TABLE IF NOT EXISTS Likes
 (
     film_id  INT REFERENCES Film (id),
     users_id INT REFERENCES Users (id)
 );
 
 
-CREATE TABLE Friend
+CREATE TABLE IF NOT EXISTS Friend
 (
     User_id   INT REFERENCES Users (id),
     Friend_id INT REFERENCES Users (id)
@@ -66,14 +66,5 @@ VALUES ('Комедия'),
        ('Документальный'),
        ('Боевик');
 
-INSERT INTO USERS
-(EMAIL, LOGIN, NAME, BIRTHDAY)
-VALUES ('test@test.com', 'test1', 'user1', '1999-11-5'),
-       ('test@test.com', 'test2', 'user2', '1988-11-5'),
-       ('test@test.com', 'test3', 'user3', '1977-11-5');
 
-INSERT INTO FILM
-              (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATING_id)
-VALUES ('test-film', 'about test', 18, '1993-1-11', 5),
-       ('test-film2', 'about test', 18, '1994-2-22', 5);
 

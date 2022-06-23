@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -55,39 +56,39 @@ public class FilmDbStorage implements FilmStorage {
 
         Film filmGenres = jdbcTemplate.queryForObject(getFilm, this::filmRows, keyHolder.getKey());
 
-        return addGenre(filmGenres);
+        return addGenre(filmGenres, film.getGenres());
 
     }
 
     @Override
-    public Film update(Film film) throws ValidationException {
+    public Film update(Film film) throws ValidationException, FilmNotFoundException {
 
         Timestamp timestamp = Timestamp.valueOf(film.getReleaseDate().atStartOfDay());
         FilmValidator.validate(film);
 
         String sql = "UPDATE film SET NAME=?,DESCRIPTION=?,DURATION=?,RELEASE_DATE=?,RATING_ID=? WHERE id = ?";
-        int rowNum = jdbcTemplate.update(sql, film.getName(), film.getDescription(),
+
+        int check = jdbcTemplate.update(sql, film.getName(), film.getDescription(),
                 film.getDuration(), timestamp, film.getMpa().getId(), film.getId());
 
-
-        if (rowNum == 1) {
-            return addGenre(film);
+        if (check != 0) {
+            return addGenre(film, film.getGenres());
         }
 
-        throw new FilmNotFoundException("фильм ненайден");
+        throw new FilmNotFoundException("фильм не найден");
     }
 
-    public Film addGenre(Film film) {
+    public Film addGenre(Film film, Set<Genre> g) {
 
         String sqlDelete = "DELETE FROM GENRE_FILM WHERE FILM_ID = ?";
 
         int check = jdbcTemplate.update(sqlDelete, film.getId());
 
-        if (film.getGenres() == null || film.getGenres().isEmpty() && check != 0) {
+        if (film.getGenres() == null || g.isEmpty() && check != 0) {
             return film;
         }
 
-        for (Genre genre : film.getGenres()) {
+        for (Genre genre : g) {
             jdbcTemplate.update(con -> {
                 PreparedStatement genreStatement = con.prepareStatement(
                         "INSERT INTO GENRE_FILM " + "(FILM_ID, GENRE_ID) VALUES (?,?)");
@@ -98,7 +99,7 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         film.setGenres(getGenreFilm(film.getId()));
-        return  film;
+        return film;
     }
 
     @Override
@@ -108,13 +109,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getById(Long id) {
+    public Film getById(Long id) throws FilmNotFoundException {
+
 
         try {
-            return jdbcTemplate.queryForObject(getFilm, this::filmRows, id);
+            jdbcTemplate.queryForObject(getFilm, this::filmRows, id);
         } catch (DataAccessException e) {
-            throw new FilmNotFoundException("фильм ненайден");
+            e.printStackTrace();
         }
+
+        throw new FilmNotFoundException("фильм не найден");
+
     }
 
     @Override
@@ -213,12 +218,12 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getPopularFilm(Integer count) {
 
         List<Film> film = (List<Film>) getAll();
-        if(count>film.size()){
-            count=film.size();
+        if (count > film.size()) {
+            count = film.size();
         }
 
         Collections.sort(film);
-        return film.subList(0,count );
+        return film.subList(0, count);
 
     }
 
@@ -233,17 +238,20 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Rating getRatingById(int ratingId) {
+    public Rating getRatingById(int ratingId) throws RatingNotFoundException {
+
         String sql = "SELECT * FROM RATING WHERE ID = ?";
+
         try {
-            return jdbcTemplate.queryForObject(sql,
+            jdbcTemplate.queryForObject(sql,
                     (rs, rowNum) -> Rating.builder()
                             .id(rs.getInt("id"))
                             .name(rs.getString("name"))
                             .build(), ratingId);
         } catch (DataAccessException e) {
-            throw new GenreNotFoundException("рейтинг не найден");
+            e.printStackTrace();
         }
+        throw new RatingNotFoundException ("жанр ненайден");
     }
 
     @Override
@@ -256,18 +264,20 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Genre getGenreById(Integer genreId) {
+    public Genre getGenreById(Integer genreId) throws GenreNotFoundException {
 
         String sql = "SELECT * FROM GENRE WHERE ID = ?";
+
         try {
-            return jdbcTemplate.queryForObject(sql,
+            jdbcTemplate.queryForObject(sql,
                     (rs, rowNum) -> Genre.builder()
                             .id(rs.getInt("id"))
                             .name(rs.getString("name"))
                             .build(), genreId);
         } catch (DataAccessException e) {
-            throw new GenreNotFoundException("жанр не найден");
+            e.printStackTrace();
         }
+        throw new GenreNotFoundException("рейтинг не найден");
     }
 
     private Film filmRows(ResultSet rowSet, int rowNum) throws SQLException {

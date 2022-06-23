@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -25,13 +27,12 @@ public class GenreController {
 
     @GetMapping
     public List<Genre> getAllGenres() {
-        List<Genre> allGenres = new ArrayList<>(filmService.getAllGenre());
-        log.info("Жанров в базе: {}", allGenres.size());
-        return allGenres;
+        log.info("Жанров в базе: {}", filmService.getAllGenre().size());
+        return (filmService.getAllGenre());
     }
 
     @GetMapping("/{genreId}")
-    public Genre getGenreById(@PathVariable Integer genreId) {
+    public Genre getGenreById(@PathVariable Integer genreId) throws GenreNotFoundException {
         log.info("Запрошен жанр id: " + genreId);
         return filmService.getGenreById(genreId);
     }
